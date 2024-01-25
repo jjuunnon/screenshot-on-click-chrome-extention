@@ -1,0 +1,10 @@
+{
+  "name": "screenshot-on-click-chrome-extention",
+  "version": "1.0.0",
+  "description": "Take a screenshot of the current tab when you click on the page",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jjuunnon",
+  "license": "MIT"
+}
