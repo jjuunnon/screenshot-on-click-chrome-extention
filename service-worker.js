@@ -1,12 +1,17 @@
-let capture = false;
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "toggleCapture") {
-    capture = !capture;
-    sendResponse({ capture });
-  } else if (request.action === "captureTab" && capture) {
-    chrome.tabs.captureVisibleTab(null, { format: 'png' }, function(screenshotUrl) {
-      sendResponse({ screenshotUrl });
+  if (request.action === "captureTab") {
+    chrome.storage.local.get(['capture'], ({ capture}) => {
+      // キャプチャーしない場合は何もしない
+      if (!capture) {
+        sendResponse({ error: 'capture is not started' });
+        return false;
+      }
+
+      // スクリーンショットを撮る
+      chrome.tabs.captureVisibleTab(null, { format: 'png' }, (screenshotUrl) => {
+        sendResponse({ screenshotUrl });
+      });
+      return true;
     });
     return true;
   } else if (request.action === "saveImage") {
@@ -14,20 +19,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     chrome.downloads.download({ url: request.image, filename });
     sendResponse({ filename });
   } else {
-    sendResponse({ capture });
-  }
-});
-
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "toggleCapture") {
-    capture = !capture;
-    sendResponse({ capture });
-  } else if (request.action === "captureTab" && capture) {
-    chrome.tabs.captureVisibleTab(null, { format: 'png' }, function(screenshotUrl) {
-      sendResponse({ screenshotUrl });
-    });
-    return true;
-  } else {
-    sendResponse({ capture });
+    sendResponse({ error: 'invalid action' });
   }
 });

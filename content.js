@@ -4,6 +4,10 @@ document.addEventListener('click', (event) => {
   const yOrigin = event.clientY / window.innerHeight;
 
   chrome.runtime.sendMessage({action: "captureTab"}, function(response) {
+    // キャプチャーしない・エラーの場合は何もしない
+    if (response.error) {
+      return;
+    }
     const { screenshotUrl } = response;
 
     // 画像を読み込んで、canvasに描画
